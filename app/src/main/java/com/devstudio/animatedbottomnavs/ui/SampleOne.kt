@@ -8,6 +8,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -27,6 +28,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,6 +46,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.devstudio.animatedbottomnavs.ui.theme.OrangeDark
+import com.devstudio.animatedbottomnavs.ui.theme.OrangeLite
 
 data class Screen(val title: String, val icon: ImageVector)
 
@@ -80,7 +84,7 @@ fun SampleOne() {
 private fun BottomNavigationBar(currentScreen: String, onItemSelected: (String) -> Unit) {
 
     val color = animateColorAsState(
-        targetValue = Color.White,
+        targetValue = MaterialTheme.colorScheme.background,
         label = "",
         animationSpec = tween(durationMillis = 500)
     )
@@ -89,7 +93,10 @@ private fun BottomNavigationBar(currentScreen: String, onItemSelected: (String) 
         modifier = Modifier
             .fillMaxWidth()
             .navigationBarsPadding()
-            .background(Color.Blue, RoundedCornerShape(25.dp))
+            .background(
+                if (isSystemInDarkTheme()) OrangeDark else OrangeLite,
+                RoundedCornerShape(25.dp)
+            )
             .padding(start = 18.dp, end = 18.dp, bottom = 12.dp, top = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -106,16 +113,23 @@ private fun BottomNavigationBar(currentScreen: String, onItemSelected: (String) 
                         )
                         .background(color.value, RoundedCornerShape(25.dp))
                         .padding(vertical = 8.dp, horizontal = 10.dp)
-                        .clickable { onItemSelected(screen.title) },
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) { onItemSelected(screen.title) },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
                         imageVector = screen.icon,
                         contentDescription = screen.title,
-                        tint = Color.Blue
+                        tint = if (isSystemInDarkTheme()) OrangeDark else OrangeLite
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = screen.title, fontSize = 16.sp, color = Color.Blue)
+                    Text(
+                        text = screen.title,
+                        fontSize = 16.sp,
+                        color = if (isSystemInDarkTheme()) OrangeDark else OrangeLite
+                    )
                 }
             } else {
                 Icon(
@@ -128,7 +142,7 @@ private fun BottomNavigationBar(currentScreen: String, onItemSelected: (String) 
                             onClick = { onItemSelected(screen.title) }),
                     imageVector = screen.icon,
                     contentDescription = screen.title,
-                    tint = Color.White
+                    tint = MaterialTheme.colorScheme.background
                 )
             }
         }
